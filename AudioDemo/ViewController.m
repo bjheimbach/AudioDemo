@@ -15,6 +15,8 @@
     double lowPassResults;  //creates the double the audio data will be outputted to
 }
 
+@property (nonatomic, strong) NSMutableArray *soundDataArray;
+
 @end
 
 @implementation ViewController
@@ -65,6 +67,8 @@
     [self createTable:@"PEFData" withField1:@"Data"];
     [super viewDidLoad];
 
+    // initialize the array
+    _soundDataArray = [[NSMutableArray alloc] init];
     
     // Disable Stop/Play button when application launches
     [stopButton setEnabled:NO];
@@ -169,8 +173,15 @@
     //[array addObject:lowPassString];  //the array the data is outputted to
     NSLog(@"PEFData: %f", lowPassResults);
     //NSLog(@"Peak Flow Data: %@", array);
-    NSString *sql = [NSString stringWithFormat:@"INSERT INTO PEFData ('Data') VALUES ('%f')", lowPassResults];
     
+    //NSString *sql = [NSString stringWithFormat:@"INSERT INTO PEFData ('Data') VALUES ('%f')", lowPassResults];
+    
+    // Should add data to array here as needed
+    [_soundDataArray addObject:[NSNumber numberWithDouble:lowPassResults]];
+    
+    /*
+     * Moved SQL saving to the end of the file
+     *
     char *err;
     if (sqlite3_exec(dbb, [sql UTF8String], NULL, NULL, &err) !=SQLITE_OK) {
         sqlite3_close(dbb);
@@ -178,7 +189,7 @@
     }else{
         NSLog(@"table updated");
     }
-
+    */
 }
 
 - (void) audioRecorderDidFinishRecording:(AVAudioRecorder *)avrecorder successfully:(BOOL)flag{
@@ -190,6 +201,9 @@
     [recorderTimer invalidate];  //stops the timer when the recorder is done recording
     recorderTimer = nil; 
     
+    // Save the data in _soundDataArray
+    // TODO: save it to sql database
+    // Then clear array by doing [_soundDataArray removeAllObjects];
     
     }
 
